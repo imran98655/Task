@@ -27,27 +27,17 @@ class TaskModel
     }
     public function fetchRecords(){
         $tasks = DB::table('task_description AS tp')
-        ->select('task_name')
-        ->distinct()
+        ->select('id','task_name')
+        ->distinct('task_name')
         ->get();
         return $tasks;
     }
-    public function deleteRecord($taskName){
+    public function deleteRecord($id){
         
-        $deleted = DB::table('task_description AS tp')
-            ->where('task_name', $taskName)
-            ->delete();
-            if ($deleted) {
-                return response()->json([
-                    'success' => true,
-                    'message' => "Task '$taskName' has been deleted."
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => "Task '$taskName' not found or could not be deleted."
-                ]);
-            }
+        DB::table('task_description')
+        ->where('id', '=', $id)
+        ->delete();
+        return true;
         }
 }
   

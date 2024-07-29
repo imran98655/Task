@@ -19,7 +19,7 @@
     <marquee behavior="" direction=""><H2>Welcome To Webreinvent</H2></marquee>
     <h2>PHP - Simple To Do List App</h2>
     <center>
-    <form id="my-form" action="{{ route('submit-task') }}" method="POST" >
+    <form id="my-form">
     @csrf
     <p>
             <input type="text" id="task-name" name="task_name" placeholder="Please enter your task" require>
@@ -56,7 +56,7 @@ $(document).ready(function() {
             alert('Please enter a task.');
         } else {
             $.ajax({
-                url: $(this).attr('action'),
+                url: 'submit-task',
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -83,10 +83,13 @@ $(document).ready(function() {
             markDone(row,taskName);
             $(this).hide();
             });
-        $('#tasks-table').on('click', '#delete', function() {  
-            var row = $(this).closest('tr');
-            var taskName = row.find('td:eq(1)').text();    
-            deleteTask(taskName);
+        $('#tasks-table').on('click', '#delete', function() { 
+            var confirmed = confirm('Are you sure you want to delete this task?');            var row = $(this).closest('tr');
+            var taskName = row.find('td:eq(1)').text();  
+            var id = row.find('td:eq(0)').text();  
+            if(confirmed){
+            deleteTask(id,taskName);
+            }
             });
         });
     });
@@ -102,7 +105,7 @@ $(document).ready(function() {
             data.forEach(function(task) {
                 $('#tasks-table tbody').append(
                         `<tr>
-                            <td>${sno}</td>
+                            <td>${task.id}</td>
                             <td>${task.task_name}</td>
                             <td>Pending</td>
                             <td>
@@ -123,17 +126,21 @@ $(document).ready(function() {
     {
         row.find('td:eq(2)').text('Completed');
     }
-    function deleteTask(taskName){
+    function deleteTask(id,taskName){
         
         $.ajax({
             url: 'get-delete-task', 
-            data: { taskName: taskName },        
+            data: { id:id,taskName: taskName },        
             dataType: "json",   
         }).done(function (data) {
-            
-            
-              
-            });
+            console.log('Delete response:', data);
+            if (data) {
+                    row.remove();
+                    console.log('Task deleted successfully:', data.message);
+                } else {
+                    console.error('Error deleting task:', data.message);
+                }
+        });
     }
 </script>
 
