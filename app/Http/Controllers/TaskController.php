@@ -37,9 +37,9 @@ class TaskController extends Controller
     return response()->json($this->fetchTask);
   } 
   public function deleteTask(Request $request){
-
+    $id = $request->input('id');
     $taskName = $request->input('taskName');
-    $this->fetchTask = $this->taskModel->deleteRecord($taskName);
-
+    $this->taskModel->deleteRecord($id);
+    return true;
   }
 }
